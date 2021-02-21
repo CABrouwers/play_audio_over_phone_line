@@ -189,14 +189,14 @@ def play_audio():
 	disable_modem_event_listener = True
 
 	wf = wave.open('sample.wav','rb')
-	chunk = 1024
-
-	data = wf.readframes(chunk)
-	while data != '':
-		analog_modem.write(data)
-		data = wf.readframes(chunk)
-		# You may need to change this sleep interval to smooth-out the audio
-		time.sleep(.12)
+	chunk = 960 
+	data = bytes(1)
+	while len(data)>0:
+		start = time.time()
+		data = wf.readframes(chunk).replace(b'\x10', b'\x10\x10')
+		analog_modem.write(data)		
+		end = time.time()
+		time.sleep(max(0,chunk/8000-end+start))
 	wf.close()
 
 	#analog_modem.flushInput()
